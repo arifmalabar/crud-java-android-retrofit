@@ -1,19 +1,27 @@
 package com.example.crudretrofit;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.crudretrofit.API.PegawaiInterface;
 import com.example.crudretrofit.adapter.AdapterData;
+import com.example.crudretrofit.auth.AuthController;
 import com.example.crudretrofit.configuration.RetroServer;
+import com.example.crudretrofit.model.Login;
 import com.example.crudretrofit.model.Pegawai;
 import com.example.crudretrofit.model.PegawaiResponse;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,6 +41,13 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar pb;
     private SwipeRefreshLayout sp;
     private FloatingActionButton btnAddPegawai;
+    private SharedPreferences sharedPreferences;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_bar, menu);
+        return true;
+    }
 
     @Override
     protected void onResume() {
@@ -41,12 +56,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.menuLogout:
+                getApplicationContext().getSharedPreferences("shared_prefs", Context.MODE_PRIVATE).edit().clear().apply();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+            default:
+                getApplicationContext().getSharedPreferences("shared_prefs", Context.MODE_PRIVATE).edit().clear().apply();
+                Intent intent1 = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent1);
+        }
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("Halaman Utama");
         rvData = findViewById(R.id.data);
         pb = findViewById(R.id.pb_data);
         sp = findViewById(R.id.sw);
+
         btnAddPegawai = findViewById(R.id.btn_toadddatapgw);
         lmData = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         rvData.setLayoutManager(lmData);
@@ -66,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
     }
     private void retrifeData()
     {
